@@ -7,25 +7,22 @@ import urls from 'constants/url';
 
 export async function middleware(req: NextRequest) {
 	const res = NextResponse.next();
-	const hostname = req.headers.get('host');
 	const url = req.nextUrl;
-
-	const currentHost = hostname?.replace(`.${urls.homeWithoutApp}`, '');
 
 	const supabase = createMiddlewareClient({ req, res });
 	const { data } = await supabase.auth.getSession();
 	const { session } = data;
 
-	if (currentHost === 'app') {
-		if (url.pathname === '/signin' || url.pathname === '/signup') {
-			if (session) {
-				url.pathname = '/';
-				return NextResponse.redirect(url);
-			}
-			return res;
+	if (url.pathname === '/signin' || url.pathname === '/signup') {
+		if (session) {
+			url.pathname = '/';
+			return NextResponse.redirect(url);
 		}
+		return res;
+	}
 
-		url.pathname = `/dashboard${url.pathname}`;
+	// Handle dashboard routes
+	if (url.pathname.startsWith('/dashboard')) {
 		return NextResponse.rewrite(url);
 	}
 
