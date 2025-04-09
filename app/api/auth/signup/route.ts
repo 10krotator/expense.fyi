@@ -26,6 +26,8 @@ export async function POST(request: NextRequest) {
 				email,
 				options: { redirectTo: getRedirectUrl() },
 			});
+			console.log('getRedirectUrl', getRedirectUrl());
+			console.log('data', data);
 
 			if (error) {
 				throw error;
